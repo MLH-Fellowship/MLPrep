@@ -41,5 +41,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+<string>Enable myApp to access your camera to capture your photo</string>
 </dict>
 </plist>
