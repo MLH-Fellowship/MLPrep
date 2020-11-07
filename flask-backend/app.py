@@ -7,10 +7,10 @@ app = Flask(__name__)
 
 
 """
-Params: 
+Params:
 ingredients - a string that contains all of the ingredients separated by a comma
 number - the maximum number of recipes to return
-Returns a dictionary with a single element, data. Data contains a list of json recipes. 
+Returns a dictionary with a single element, data. Data contains a list of json recipes.
 Each json includes:
 name - the name of the food
 url - the url of the recipe
@@ -36,7 +36,7 @@ def hello(ingredients="", number=0):
             recipe_obj["ingredients"].append(ingredient["name"])
         recipe_json = json.dumps(recipe_obj)
         recipe_list.append(recipe_json)
-    data_dict = {"data": recipe_list} 
+    data_dict = {"data": recipe_list}
     return data_dict
 
 def getRecipe(ingredients, number):

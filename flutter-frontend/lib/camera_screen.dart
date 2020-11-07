@@ -75,7 +75,7 @@ class CameraScreenState extends State<CameraScreen> {
             Navigator.push(
               context, 
               MaterialPageRoute(
-                builder: (context) => DisplayImageScreen(imagePath: path)
+                builder: (context) => DisplayImage(imagePath: path)
               )
             );
           } catch (e) {
