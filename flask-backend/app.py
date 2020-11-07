@@ -1,27 +1,42 @@
 from flask import Flask
 import requests
 from config import api_key
+import json
 
 app = Flask(__name__)
-ingredients_list = ["cheese", "bell peppers"]
+ingredients_list = ["oranges", "pears"]
 ingredients = ",".join(ingredients_list)
 
+
+"""
+Returns a dictionary with a single element, data. Data contains a list of json recipes. Each json includes:
+name - the name of the food
+url - the url of the recipe
+img - the url of a picture of the good
+cuisine - the cuisine the food belongs to, is set to none if there is no assigned cuisine
+ingredients - a list of the user's ingredients that are used in the recipe
+"""
 @app.route("/")
 def hello():
     data_list = getRecipe()
-    string = ""
+    recipe_list = []
     for data in data_list:
+        recipe_obj = {}
         more_data = getMoreInfo(data["id"])
-        cuisine = "None"
+        recipe_obj["name"] = data["title"]
+        recipe_obj["url"] = more_data["sourceUrl"]
+        recipe_obj["img"] = data["image"]
+        recipe_obj["cuisine"] = "None"
         if more_data["cuisines"] != []:
-            cuisine = more_data["cuisines"][0]
-        info = "Title: " + data["title"] + " Missed Ingredients: " + str(data["missedIngredientCount"]) + " Used Ingredients: " + str(data["usedIngredientCount"]) + " Type: " + cuisine
-        string += "<h1>" + info + "</h1>" + "<img src=\"" + data["image"] + "\">" + "<a href=\"" + more_data["sourceUrl"] + "\">Link</a>" + "<ul>"
+            recipe_obj["cuisine"] = more_data["cuisines"][0]
+        recipe_obj["ingredients"] = []
         for ingredient in data["usedIngredients"]:
-            string += "<li>" + ingredient["name"] + "</li>"
-        string += "</ul>"
-        
-    return string
+            recipe_obj["ingredients"].append(ingredient["name"])
+        recipe_json = json.dumps(recipe_obj)
+        recipe_list.append(recipe_json)
+    print(recipe_list)
+    data_dict = {"data": recipe_list} 
+    return data_dict
 
 def getRecipe():
    URL = "https://api.spoonacular.com/recipes/findByIngredients?apiKey=" + api_key
