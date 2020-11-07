@@ -4,21 +4,23 @@ from config import api_key
 import json
 
 app = Flask(__name__)
-ingredients_list = ["oranges", "pears"]
-ingredients = ",".join(ingredients_list)
 
 
 """
-Returns a dictionary with a single element, data. Data contains a list of json recipes. Each json includes:
+Params: 
+ingredients - a string that contains all of the ingredients separated by a comma
+number - the maximum number of recipes to return
+Returns a dictionary with a single element, data. Data contains a list of json recipes. 
+Each json includes:
 name - the name of the food
 url - the url of the recipe
 img - the url of a picture of the good
 cuisine - the cuisine the food belongs to, is set to none if there is no assigned cuisine
 ingredients - a list of the user's ingredients that are used in the recipe
 """
-@app.route("/")
-def hello():
-    data_list = getRecipe()
+@app.route("/<ingredients>/<number>")
+def hello(ingredients="", number=0):
+    data_list = getRecipe(ingredients, number)
     recipe_list = []
     for data in data_list:
         recipe_obj = {}
@@ -28,19 +30,18 @@ def hello():
         recipe_obj["img"] = data["image"]
         recipe_obj["cuisine"] = "None"
         if more_data["cuisines"] != []:
-            recipe_obj["cuisine"] = more_data["cuisines"][0]
+            recipe_obj["cuisine"] = ", ".join(more_data["cuisines"])
         recipe_obj["ingredients"] = []
         for ingredient in data["usedIngredients"]:
             recipe_obj["ingredients"].append(ingredient["name"])
         recipe_json = json.dumps(recipe_obj)
         recipe_list.append(recipe_json)
-    print(recipe_list)
     data_dict = {"data": recipe_list} 
     return data_dict
 
-def getRecipe():
+def getRecipe(ingredients, number):
    URL = "https://api.spoonacular.com/recipes/findByIngredients?apiKey=" + api_key
-   PARAMS = {'ingredients': ingredients, 'number': 2, 'ranking': 1, 'ignorePantry': False}
+   PARAMS = {'ingredients': ingredients, 'number': number, 'ranking': 1, 'ignorePantry': False}
    r = requests.get(url = URL, params = PARAMS)
    data = r.json()
    return data
