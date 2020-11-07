@@ -1,0 +1,4 @@
+#Thu Nov 05 16:14:40 MST 2020
+base.0=/Users/eamspoker21/CookMe/CookMe/build/app/intermediates/dex/debug/mergeDexDebug/out/classes.dex
+path.0=classes.dex
+renamed.0=classes.dex
