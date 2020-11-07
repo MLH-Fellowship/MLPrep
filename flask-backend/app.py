@@ -19,7 +19,7 @@ cuisine - the cuisine the food belongs to, is set to none if there is no assigne
 ingredients - a list of the user's ingredients that are used in the recipe
 """
 @app.route("/<ingredients>/<number>")
-def hello(ingredients="", number=0):
+def getRecipeFromIngredients(ingredients="", number=5):
     data_list = getRecipe(ingredients, number)
     recipe_list = []
     for data in data_list:
