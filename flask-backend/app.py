@@ -3,6 +3,8 @@ import requests
 from config import api_key
 
 app = Flask(__name__)
+ingredients_list = ["cheese", "bell peppers"]
+ingredients = ",".join(ingredients_list)
 
 @app.route("/")
 def hello():
@@ -23,7 +25,7 @@ def hello():
 
 def getRecipe():
    URL = "https://api.spoonacular.com/recipes/findByIngredients?apiKey=" + api_key
-   PARAMS = {'ingredients': 'soy sauce,pepper', 'number': 2, 'ranking': 1, 'ignorePantry': False}
+   PARAMS = {'ingredients': ingredients, 'number': 2, 'ranking': 1, 'ignorePantry': False}
    r = requests.get(url = URL, params = PARAMS)
    data = r.json()
    return data
