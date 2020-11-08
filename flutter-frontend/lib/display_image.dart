@@ -67,7 +67,7 @@ class _DisplayImageState extends State<DisplayImage> {
     if (_imageWidth == null || _imageHeight == null) return [];
 
     double factorX = screen.width;
-    double factorY = _imageHeight / _imageHeight * screen.width;
+    double factorY = screen.height;
 
     return _recognitions.map((re) {
       return Container(
@@ -129,7 +129,7 @@ class _DisplayImageState extends State<DisplayImage> {
         ),
       ),
       floatingActionButton: Padding(
-            padding: const EdgeInsets.all(50.0),
+            padding: const EdgeInsets.all(70.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[

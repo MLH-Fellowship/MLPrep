@@ -52,33 +52,36 @@ class CameraScreenState extends State<CameraScreen> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.camera_alt),
-          onPressed: () async {
-            try {
-              // Ensure camera is initialized
-              await initializeControllerFuture;
+      floatingActionButton: Padding(
+          padding: const EdgeInsets.only(bottom: 50.0),
+          child: FloatingActionButton(
+            child: Icon(Icons.camera_alt),
+            onPressed: () async {
+              try {
+                // Ensure camera is initialized
+                await initializeControllerFuture;
 
-              // Construct path where image is saved
-              final path = join(
-                // Store picture in temp directory
-                (await getTemporaryDirectory()).path,
-                '${DateTime.now()}.png',
-              );
+                // Construct path where image is saved
+                final path = join(
+                  // Store picture in temp directory
+                  (await getTemporaryDirectory()).path,
+                  '${DateTime.now()}.png',
+                );
 
-              // Take a picture and log where it's saved
-              await controller.takePicture(path);
+                // Take a picture and log where it's saved
+                await controller.takePicture(path);
 
-              // If picture was taken, display image on new screen
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DisplayImage(imagePath: path)));
-            } catch (e) {
-              // Log error to the console
-              print(e);
-            }
-          }),
+                // If picture was taken, display image on new screen
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DisplayImage(imagePath: path)));
+              } catch (e) {
+                // Log error to the console
+                print(e);
+              }
+            })
+          ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }

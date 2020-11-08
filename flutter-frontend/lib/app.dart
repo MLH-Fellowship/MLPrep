@@ -2,7 +2,9 @@ import 'dart:ffi';
 
 import 'package:CookMe/camera_screen.dart';
 import 'package:CookMe/main.dart';
+import 'package:camera/camera.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'camera_tab.dart';
 import 'favorites_tab.dart';
@@ -17,6 +19,10 @@ class CupertinoStoreApp extends StatelessWidget {
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
     return CupertinoApp(
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+      DefaultMaterialLocalizations.delegate,
+      DefaultWidgetsLocalizations.delegate,
+  ],
       home: CupertinoStoreHomePage(),
     );
   }
