@@ -4,11 +4,10 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'display_image.dart';
 
-
 class CameraScreen extends StatefulWidget {
   final CameraDescription camera;
 
-  const CameraScreen({Key key, @required this.camera}) : super(key:key);
+  const CameraScreen({Key key, @required this.camera}) : super(key: key);
 
   @override
   CameraScreenState createState() => CameraScreenState();
@@ -25,9 +24,9 @@ class CameraScreenState extends State<CameraScreen> {
     super.initState();
     // Create a CameraController to display the current output from the camera
     controller = CameraController(widget.camera, ResolutionPreset.medium);
-    
+
     // Initialize the controller. This returns a Future.
-    initializeControllerFuture = controller.initialize();  
+    initializeControllerFuture = controller.initialize();
   }
 
   @override
@@ -54,38 +53,33 @@ class CameraScreenState extends State<CameraScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        
-        child: Icon(Icons.camera_alt),
-        onPressed: () async {
-          try {
-            // Ensure camera is initialized
-            await initializeControllerFuture;
+          child: Icon(Icons.camera_alt),
+          onPressed: () async {
+            try {
+              // Ensure camera is initialized
+              await initializeControllerFuture;
 
-            // Construct path where image is saved
-            final path = join(
-              // Store picture in temp directory
-              (await getTemporaryDirectory()).path,
-              '${DateTime.now()}.png',
-            );
+              // Construct path where image is saved
+              final path = join(
+                // Store picture in temp directory
+                (await getTemporaryDirectory()).path,
+                '${DateTime.now()}.png',
+              );
 
-            // Take a picture and log where it's saved
-            await controller.takePicture(path);
+              // Take a picture and log where it's saved
+              await controller.takePicture(path);
 
-            // If picture was taken, display image on new screen
-            Navigator.push(
-              context, 
-              MaterialPageRoute(
-                builder: (context) => DisplayImage(imagePath: path)
-              )
-            );
-          } catch (e) {
-            // Log error to the console
-            print(e);
-          }
-        }
-      ),
+              // If picture was taken, display image on new screen
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DisplayImage(imagePath: path)));
+            } catch (e) {
+              // Log error to the console
+              print(e);
+            }
+          }),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-
     );
   }
 }
