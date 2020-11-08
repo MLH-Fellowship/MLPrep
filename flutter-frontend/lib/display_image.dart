@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 import 'package:tflite/tflite.dart';
 
 
 class DisplayImage extends StatefulWidget {
   final String imagePath;
   
-  const DisplayImage({Key key, this.imagePath}) : super(key:key);
+  DisplayImage({Key key, this.imagePath}) : super(key:key);
 
   @override
   _DisplayImageState createState() => _DisplayImageState();
 }
 
 class _DisplayImageState extends State<DisplayImage> {
+  File image;
   List _recognitions;
   bool _busy;
   double _imageWidth, _imageHeight;
@@ -21,12 +23,22 @@ class _DisplayImageState extends State<DisplayImage> {
   void initState() { 
     super.initState();
     _busy = true;
-    loadTfModel().then((val) {{
-      detectObject(widget.imagePath);
-      setState(() {
-        _busy = false;
-      });
+    rotateImage().then((val) {{
+      loadTfModel().then((val) {{
+        detectObject(image).then((val) {{
+          setState(() {
+            _busy = false;
+          });
+        }});
+      }});
     }});
+  }
+
+  rotateImage() async {
+    File rotatedImage = await FlutterExifRotation.rotateImage(path: widget.imagePath);
+    setState(() {
+      image = rotatedImage;
+    });
   }
 
   // Loads the tflite model
@@ -38,9 +50,9 @@ class _DisplayImageState extends State<DisplayImage> {
   }
 
   // Detects objects in image
-  detectObject(String imagePath) async {
+  detectObject(File image) async {
     var recognitions = await Tflite.detectObjectOnImage(
-      path: imagePath,       // required
+      path: image.path,       // required
       imageMean: 127.5,     
       imageStd: 127.5,      
       threshold: 0.4,       // defaults to 0.1
@@ -48,7 +60,7 @@ class _DisplayImageState extends State<DisplayImage> {
       asynch: true          // defaults to true
     );
 
-    FileImage(File(imagePath))
+    FileImage(image)
         .resolve(ImageConfiguration())
         .addListener((ImageStreamListener((ImageInfo info, bool _) {
           setState(() {
@@ -67,7 +79,7 @@ class _DisplayImageState extends State<DisplayImage> {
     if (_imageWidth == null || _imageHeight == null) return [];
 
     double factorX = screen.width;
-    double factorY = screen.height;
+    double factorY = _imageHeight / _imageHeight * screen.width;
 
     return _recognitions.map((re) {
       return Container(
@@ -105,10 +117,12 @@ class _DisplayImageState extends State<DisplayImage> {
     stackChildren.add(
       Positioned(
         child: Container(
-          child:Image.file(File(widget.imagePath))
+          child:Image.file(image)
         ),
       )
     );
+
+    stackChildren.addAll(renderBoxes(size));
 
     if (_busy) {
       stackChildren.add(
@@ -118,7 +132,6 @@ class _DisplayImageState extends State<DisplayImage> {
       );
     }
 
-    stackChildren.addAll(renderBoxes(size));
 
 
     return Scaffold(

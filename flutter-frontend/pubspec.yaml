@@ -18,6 +18,7 @@ dependencies:
   tflite:
   intl: ^0.16.1
   provider: ^4.1.1
+  flutter_exif_rotation:
   cupertino_icons: ^1.0.0
 
 dev_dependencies:
