@@ -4,12 +4,11 @@ from config import api_key
 import json
 
 app = Flask(__name__)
-
+number_recipes = 5
 
 """
 Params:
 ingredients - a string that contains all of the ingredients separated by a comma
-number - the maximum number of recipes to return
 Returns a dictionary with a single element, data. Data contains a list of json recipes.
 Each json includes:
 name - the name of the food
@@ -18,9 +17,9 @@ img - the url of a picture of the good
 cuisine - the cuisine the food belongs to, is set to none if there is no assigned cuisine
 ingredients - a list of the user's ingredients that are used in the recipe
 """
-@app.route("/<ingredients>/<number>")
-def getRecipeFromIngredients(ingredients="", number=5):
-    data_list = getRecipe(ingredients, number)
+@app.route("/<ingredients>")
+def getRecipeFromIngredients(ingredients=""):
+    data_list = getRecipe(ingredients)
     recipe_list = []
     for data in data_list:
         recipe_obj = {}
@@ -39,9 +38,9 @@ def getRecipeFromIngredients(ingredients="", number=5):
     data_dict = {"data": recipe_list}
     return data_dict
 
-def getRecipe(ingredients, number):
+def getRecipe(ingredients):
    URL = "https://api.spoonacular.com/recipes/findByIngredients?apiKey=" + api_key
-   PARAMS = {'ingredients': ingredients, 'number': number, 'ranking': 1, 'ignorePantry': False}
+   PARAMS = {'ingredients': ingredients, 'number': number_recipes, 'ranking': 1, 'ignorePantry': False}
    r = requests.get(url = URL, params = PARAMS)
    data = r.json()
    return data
