@@ -17,8 +17,14 @@ img - the url of a picture of the good
 cuisine - the cuisine the food belongs to, is set to none if there is no assigned cuisine
 ingredients - a list of the user's ingredients that are used in the recipe
 """
+
+@app.route("/")
+def noIngredients():
+    return {};
+
 @app.route("/<ingredients>")
 def getRecipeFromIngredients(ingredients=""):
+
     data_list = getRecipe(ingredients)
     recipe_list = []
     for data in data_list:
