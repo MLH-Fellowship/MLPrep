@@ -1,7 +1,7 @@
 import 'recipe.dart';
 
 class RecipeRepository {
-  static const _allRecipes = <Recipe>[
+  static var _allRecipes = <Recipe>[
     Recipe(
         name: 'Chicken Tikki',
         cuisine: 'Indian',
