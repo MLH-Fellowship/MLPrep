@@ -28,7 +28,6 @@ class FavoritesListTab extends StatelessWidget {
                           recipe: recipes[index],
                           lastItem: index == recipes.length - 1);
                     }
-
                     return null;
                   },
                 ),

@@ -1,3 +1,4 @@
+import 'package:CookMe/ingredients.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
@@ -16,6 +17,7 @@ class DisplayImage extends StatefulWidget {
 class _DisplayImageState extends State<DisplayImage> {
   File image;
   List _recognitions;
+  List _ingredients;
   bool _busy;
   double _imageWidth, _imageHeight;
 
@@ -51,7 +53,7 @@ class _DisplayImageState extends State<DisplayImage> {
 
   // Detects objects in image
   detectObject(File image) async {
-    var recognitions = await Tflite.detectObjectOnImage(
+    List recognitions = await Tflite.detectObjectOnImage(
       path: image.path,       // required
       imageMean: 127.5,     
       imageStd: 127.5,      
@@ -59,6 +61,11 @@ class _DisplayImageState extends State<DisplayImage> {
       numResultsPerClass: 10,// defaults to 5
       asynch: true          // defaults to true
     );
+
+    // Get the object name and filter duplicates
+    List<String> ingredients = recognitions.map((re) {
+      return re['detectedClass'].toString();
+    }).toSet().toList();
 
     FileImage(image)
         .resolve(ImageConfiguration())
@@ -68,9 +75,12 @@ class _DisplayImageState extends State<DisplayImage> {
             _imageHeight = info.image.height.toDouble();
           });
         }))); 
+        
     setState(() {
       _recognitions = recognitions;
+      _ingredients = ingredients;
     });
+
   }
 
   // display the bounding boxes over the detected objects
@@ -132,8 +142,6 @@ class _DisplayImageState extends State<DisplayImage> {
       );
     }
 
-
-
     return Scaffold(
       appBar: AppBar(title: Text('Display the Image')),
       body: Container(
@@ -153,7 +161,13 @@ class _DisplayImageState extends State<DisplayImage> {
                 ),
                 FloatingActionButton(
                   heroTag: null,
-                  onPressed: () { },
+                  onPressed: () {
+                    if (_ingredients != null) {
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => IngredientsList(ingredients: _ingredients))
+                      );
+                    }
+                  },
                   child: Icon(Icons.done),
                 )
               ],
