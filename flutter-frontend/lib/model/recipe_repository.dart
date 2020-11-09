@@ -25,6 +25,10 @@ class RecipeRepository {
         url: 'www.youtube.com'),
   ];
 
+  void setRecipes(List<Recipe> recipes) {
+    _allRecipes = recipes;
+  }
+
   static List<Recipe> loadRecipes() {
     return _allRecipes;
   }

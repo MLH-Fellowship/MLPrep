@@ -42,6 +42,8 @@
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 	<key>NSCameraUsageDescription</key>
+	<key>io.flutter.embedded_views_preview</key>
+	<string>YES</string>
 <string>Enable myApp to access your camera to capture your photo</string>
 </dict>
 </plist>
