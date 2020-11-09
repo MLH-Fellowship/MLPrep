@@ -84,6 +84,10 @@ class _IngredientsListState extends State<IngredientsList> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: TextField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Ingredient',
+                    ),
                     controller: nameController,
                     onSubmitted: (text) {},
                   ),
