@@ -12,27 +12,29 @@ class IngredientsList extends StatefulWidget {
 
 class _IngredientsListState extends State<IngredientsList> {
   TextEditingController nameController = TextEditingController();
+  List<String> ingredients;
+
+  @override
+  void initState() {
+    super.initState();
+    ingredients = []..addAll(widget.ingredients);
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Widget> children = new List<Widget>();
+    // List<Widget> children = new List<Widget>();
 
-    widget.ingredients.forEach((item) {
-      children.add(
-        new Row(
-          children: <Widget>[
-            new Text(item.toString()),
-            new SizedBox(width: 50.0),
-            new Icon(Icons.delete),
-          ],
-        ),
-      );
-    });
-
-    void addItemToList() {
-      setState(() {
-        widget.ingredients.insert(0, nameController.text);
-      });
-    }
+    // widget.ingredients.forEach((item) {
+    //   children.add(
+    //     new Row(
+    //       children: <Widget>[
+    //         new Text(item.toString()),
+    //         new SizedBox(width: 50.0),
+    //         new Icon(Icons.delete),
+    //       ],
+    //     ),
+    //   );
+    // });
 
     return Scaffold(
       appBar: AppBar(
@@ -53,9 +55,9 @@ class _IngredientsListState extends State<IngredientsList> {
         Expanded(
             child: ListView.builder(
                 padding: const EdgeInsets.all(8),
-                itemCount: widget.ingredients.length,
+                itemCount: ingredients.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final item = widget.ingredients[index];
+                  final item = ingredients[index];
                   return Dismissible(
                     key: Key(item),
                     direction: DismissDirection.startToEnd,
@@ -65,14 +67,14 @@ class _IngredientsListState extends State<IngredientsList> {
                         icon: Icon(Icons.delete_forever),
                         onPressed: () {
                           setState(() {
-                            widget.ingredients.removeAt(index);
+                            ingredients.removeAt(index);
                           });
                         },
                       ),
                     ),
                     onDismissed: (direction) {
                       setState(() {
-                        widget.ingredients.removeAt(index);
+                        ingredients.removeAt(index);
                       });
                     },
                   );
@@ -84,21 +86,20 @@ class _IngredientsListState extends State<IngredientsList> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Ingredient',
-                    ),
-                    controller: nameController,
-                    onSubmitted: (text) {},
-                  ),
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Ingredient',
+                      ),
+                      controller: nameController),
                 ),
               ),
               FloatingActionButton(
                   child: Icon(Icons.add),
-                  onPressed: () {
+                  onPressed: () async {
                     setState(() {
                       FocusScope.of(context).unfocus();
-                      addItemToList();
+                      ingredients.insert(0, nameController.text);
+                      nameController.clear();
                     });
                   })
             ]))
