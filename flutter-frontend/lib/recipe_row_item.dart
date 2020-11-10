@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:localstorage/localstorage.dart';
 
 import 'model/app_state_model.dart';
 import 'model/recipe.dart';
@@ -8,7 +9,9 @@ import 'styles.dart';
 import 'recipe_details.dart';
 
 class RecipeRowItem extends StatelessWidget {
-  const RecipeRowItem({
+  final LocalStorage storage = new LocalStorage('favorites');
+
+  RecipeRowItem({
     this.index,
     this.recipe,
     this.lastItem,
@@ -72,11 +75,20 @@ class RecipeRowItem extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 onPressed: () {
                   final model = Provider.of<AppStateModel>(context, listen: false);
+                  List favoritesList = storage.getItem('favoritesList') ?? new List();
+                  Map<String, dynamic> recipeJson = recipe.toJson();
+                  if (recipe.favorited) {
+                    // Remove from favorites list
+                    favoritesList.removeWhere((element) => element['name'] == recipe.name);
+                    recipe.favorited = false;
+                  }
+                  else {
+                    favoritesList.add(recipeJson);
+                    recipe.favorited = true;
+                  }
+                  storage.setItem('favoritesList', favoritesList);
                 },
-                child: const Icon(
-                  CupertinoIcons.heart,
-                  semanticLabel: 'Add',
-                ),
+                child: recipe.favorited ? Icon(CupertinoIcons.heart_solid, semanticLabel: 'Unfavorite') : Icon(CupertinoIcons.heart, semanticLabel: 'Favorite'),
               ),
             ],
           ),

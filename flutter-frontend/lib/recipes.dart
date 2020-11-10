@@ -10,6 +10,7 @@ class Recipes extends StatelessWidget {
     return Consumer<AppStateModel>(
       builder: (context, model, child) {
         final recipes = model.getRecipes();
+        print(recipes);
         return CustomScrollView(
           semanticChildCount: recipes.length,
           slivers: <Widget>[
