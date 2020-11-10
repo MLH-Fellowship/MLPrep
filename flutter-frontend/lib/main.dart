@@ -1,10 +1,16 @@
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
+
+import 'app.dart';
+import 'model/app_state_model.dart';
+
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'camera_screen.dart';
 
 CameraDescription rearCamera;
 
-Future<void> main()  async{
+Future<void> main() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
   // can be called before `runApp()`
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +19,12 @@ Future<void> main()  async{
   final cameras = await availableCameras();
   rearCamera = cameras.first;
 
-  runApp(MyApp());
+  return runApp(
+    ChangeNotifierProvider<AppStateModel>(
+      create: (context) => AppStateModel()..loadRecipes(),
+      child: CupertinoStoreApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -21,9 +32,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MLPrep',
-      theme: ThemeData.dark(),
-      home: CameraScreen(camera: rearCamera)
-    );
+        title: 'MLPrep',
+        theme: ThemeData.dark(),
+        home: CameraScreen(camera: rearCamera));
   }
 }

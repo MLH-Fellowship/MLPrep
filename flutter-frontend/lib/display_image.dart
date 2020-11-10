@@ -1,19 +1,23 @@
+import 'package:CookMe/ingredients.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:flutter_exif_rotation/flutter_exif_rotation.dart';
 import 'package:tflite/tflite.dart';
 
 
 class DisplayImage extends StatefulWidget {
   final String imagePath;
   
-  const DisplayImage({Key key, this.imagePath}) : super(key:key);
+  DisplayImage({Key key, this.imagePath}) : super(key:key);
 
   @override
   _DisplayImageState createState() => _DisplayImageState();
 }
 
 class _DisplayImageState extends State<DisplayImage> {
+  File image;
   List _recognitions;
+  List _ingredients;
   bool _busy;
   double _imageWidth, _imageHeight;
 
@@ -21,12 +25,22 @@ class _DisplayImageState extends State<DisplayImage> {
   void initState() { 
     super.initState();
     _busy = true;
-    loadTfModel().then((val) {{
-      detectObject(widget.imagePath);
-      setState(() {
-        _busy = false;
-      });
+    rotateImage().then((val) {{
+      loadTfModel().then((val) {{
+        detectObject(image).then((val) {{
+          setState(() {
+            _busy = false;
+          });
+        }});
+      }});
     }});
+  }
+
+  rotateImage() async {
+    File rotatedImage = await FlutterExifRotation.rotateImage(path: widget.imagePath);
+    setState(() {
+      image = rotatedImage;
+    });
   }
 
   // Loads the tflite model
@@ -38,9 +52,9 @@ class _DisplayImageState extends State<DisplayImage> {
   }
 
   // Detects objects in image
-  detectObject(String imagePath) async {
-    var recognitions = await Tflite.detectObjectOnImage(
-      path: imagePath,       // required
+  detectObject(File image) async {
+    List recognitions = await Tflite.detectObjectOnImage(
+      path: image.path,       // required
       imageMean: 127.5,     
       imageStd: 127.5,      
       threshold: 0.4,       // defaults to 0.1
@@ -48,7 +62,12 @@ class _DisplayImageState extends State<DisplayImage> {
       asynch: true          // defaults to true
     );
 
-    FileImage(File(imagePath))
+    // Get the object name and filter duplicates
+    List<String> ingredients = recognitions.map((re) {
+      return re['detectedClass'].toString();
+    }).toSet().toList();
+
+    FileImage(image)
         .resolve(ImageConfiguration())
         .addListener((ImageStreamListener((ImageInfo info, bool _) {
           setState(() {
@@ -56,9 +75,12 @@ class _DisplayImageState extends State<DisplayImage> {
             _imageHeight = info.image.height.toDouble();
           });
         }))); 
+        
     setState(() {
       _recognitions = recognitions;
+      _ingredients = ingredients;
     });
+
   }
 
   // display the bounding boxes over the detected objects
@@ -105,10 +127,12 @@ class _DisplayImageState extends State<DisplayImage> {
     stackChildren.add(
       Positioned(
         child: Container(
-          child:Image.file(File(widget.imagePath))
+          child:Image.file(image)
         ),
       )
     );
+
+    stackChildren.addAll(renderBoxes(size));
 
     if (_busy) {
       stackChildren.add(
@@ -118,9 +142,6 @@ class _DisplayImageState extends State<DisplayImage> {
       );
     }
 
-    stackChildren.addAll(renderBoxes(size));
-
-
     return Scaffold(
       appBar: AppBar(title: Text('Display the Image')),
       body: Container(
@@ -129,7 +150,7 @@ class _DisplayImageState extends State<DisplayImage> {
         ),
       ),
       floatingActionButton: Padding(
-            padding: const EdgeInsets.all(50.0),
+            padding: const EdgeInsets.all(70.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -140,7 +161,13 @@ class _DisplayImageState extends State<DisplayImage> {
                 ),
                 FloatingActionButton(
                   heroTag: null,
-                  onPressed: () { },
+                  onPressed: () {
+                    if (_ingredients != null) {
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (context) => IngredientsList(ingredients: _ingredients))
+                      );
+                    }
+                  },
                   child: Icon(Icons.done),
                 )
               ],
