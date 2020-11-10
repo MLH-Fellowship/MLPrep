@@ -3,7 +3,6 @@ import 'package:camera/camera.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'display_image.dart';
-import 'package:CookMe/ingredients.dart';
 
 class CameraScreen extends StatefulWidget {
   final CameraDescription camera;
@@ -56,19 +55,33 @@ class CameraScreenState extends State<CameraScreen> {
       floatingActionButton: Padding(
           padding: const EdgeInsets.only(bottom: 50.0),
           child: FloatingActionButton(
-              child: Icon(Icons.camera_alt),
-              onPressed: () async {
-                try {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => IngredientsList(
-                              ingredients: <String>["apples", "pears"])));
-                } catch (e) {
-                  // Log error to the console
-                  print(e);
-                }
-              })),
+            child: Icon(Icons.camera_alt),
+            onPressed: () async {
+              try {
+                // Ensure camera is initialized
+                await initializeControllerFuture;
+
+                // Construct path where image is saved
+                final path = join(
+                  // Store picture in temp directory
+                  (await getTemporaryDirectory()).path,
+                  '${DateTime.now()}.png',
+                );
+
+                // Take a picture and log where it's saved
+                await controller.takePicture(path);
+
+                // If picture was taken, display image on new screen
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DisplayImage(imagePath: path)));
+              } catch (e) {
+                // Log error to the console
+                print(e);
+              }
+            })
+          ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }

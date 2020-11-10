@@ -27,20 +27,6 @@ class _IngredientsListState extends State<IngredientsList> {
 
   @override
   Widget build(BuildContext context) {
-    // List<Widget> children = new List<Widget>();
-
-    // widget.ingredients.forEach((item) {
-    //   children.add(
-    //     new Row(
-    //       children: <Widget>[
-    //         new Text(item.toString()),
-    //         new SizedBox(width: 50.0),
-    //         new Icon(Icons.delete),
-    //       ],
-    //     ),
-    //   );
-    // });
-
     return Scaffold(
       appBar: AppBar(
         title: Text("List of Ingredients"),
@@ -48,7 +34,7 @@ class _IngredientsListState extends State<IngredientsList> {
         FlatButton(
           textColor: Colors.white,
           onPressed: () async {
-            var url = "http://192.168.254.13:5000/${widget.ingredients.join(',')}";
+            var url = "http://192.168.254.13:5000/${ingredients.join(',')}";
             var response = await http.get(url);
             if (response.statusCode == 200) {
               Map parsed = jsonDecode(response.body);
@@ -113,7 +99,7 @@ class _IngredientsListState extends State<IngredientsList> {
                   child: TextField(
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
-                        labelText: 'Ingredient',
+                        labelText: 'Add an ingredient...',
                       ),
                       controller: nameController),
                 ),

@@ -89,6 +89,7 @@ class _DisplayImageState extends State<DisplayImage> {
       _recognitions = recognitions;
       _ingredients = ingredients;
     });
+
   }
 
   // display the bounding boxes over the detected objects
