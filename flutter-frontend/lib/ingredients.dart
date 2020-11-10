@@ -16,23 +16,17 @@ class IngredientsList extends StatefulWidget {
 }
 
 class _IngredientsListState extends State<IngredientsList> {
+  TextEditingController nameController = TextEditingController();
+  List<String> ingredients;
+
+  @override
+  void initState() {
+    super.initState();
+    ingredients = []..addAll(widget.ingredients);
+  }
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> children = new List<Widget>();
-    
-    widget.ingredients.forEach((item) {
-      children.add(
-        new Row(
-          children: <Widget>[
-            new Text(item.toString()),
-            new SizedBox(width: 50.0),
-            new Icon(Icons.delete),
-          ],
-        ),
-      );
-    });
-
     return Scaffold(
       appBar: AppBar(
         title: Text("List of Ingredients"),
@@ -40,13 +34,13 @@ class _IngredientsListState extends State<IngredientsList> {
         FlatButton(
           textColor: Colors.white,
           onPressed: () async {
-            var url = "http://192.168.254.13:5000/${widget.ingredients.join(',')}";
+            var url = "http://192.168.254.13:5000/${ingredients.join(',')}";
             var response = await http.get(url);
             if (response.statusCode == 200) {
               Map parsed = jsonDecode(response.body);
               List parsedList = parsed["data"];
               List<Recipe> recipes = parsedList.map((re) =>  Recipe.fromJson(jsonDecode(re))).toList();
-              
+
               var recipeRepo = RecipeRepository();
               recipeRepo.setRecipes(recipes);
 
@@ -65,22 +59,62 @@ class _IngredientsListState extends State<IngredientsList> {
           },
           child: Text("Confirm"),
           shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
-        ),
-      ],
-      ),
-      body: ListView(
-        padding: EdgeInsets.fromLTRB(25.0, 25.0, 25.0, 75.0),
-        children: children,
-      ),
-      floatingActionButton: Padding(
-          padding: const EdgeInsets.only(bottom: 50.0),
-          child: FloatingActionButton(
-            child: Icon(Icons.add),
-            onPressed: () {
-              
-            })
           ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        ],
+      ),
+      body: Column(children: <Widget>[
+        Expanded(
+            child: ListView.builder(
+                padding: const EdgeInsets.all(8),
+                itemCount: ingredients.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final item = ingredients[index];
+                  return Dismissible(
+                    key: Key(item),
+                    direction: DismissDirection.startToEnd,
+                    child: ListTile(
+                      title: Text(item),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete_forever),
+                        onPressed: () {
+                          setState(() {
+                            ingredients.removeAt(index);
+                          });
+                        },
+                      ),
+                    ),
+                    onDismissed: (direction) {
+                      setState(() {
+                        ingredients.removeAt(index);
+                      });
+                    },
+                  );
+                })),
+        Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 60),
+            child: Row(children: <Widget>[
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: TextField(
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: 'Add an ingredient...',
+                      ),
+                      controller: nameController),
+                ),
+              ),
+              FloatingActionButton(
+                  child: Icon(Icons.add),
+                  onPressed: () async {
+                    setState(() {
+                      FocusScope.of(context).unfocus();
+                      ingredients.insert(0, nameController.text);
+                      nameController.clear();
+                    });
+                  })
+            ]))
+      ]),
     );
   }
 }
