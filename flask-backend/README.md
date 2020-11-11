@@ -1,4 +1,4 @@
-# Flask Backend for M(ea)LPrep
+# Flask Backend for MLPrep
 
 ## Getting Started
 1. Create the virtual environment
