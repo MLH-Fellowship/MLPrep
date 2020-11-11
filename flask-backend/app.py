@@ -4,7 +4,7 @@ from config import api_key
 import json
 
 app = Flask(__name__)
-number_recipes = 1
+number_recipes = 5
 
 """
 Params:
