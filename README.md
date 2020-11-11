@@ -6,6 +6,9 @@ MLPrep is a mobile app that offers recipe recommendations based on a picture of 
 
 ## Screenshots
 
+![](imgs/screen1.jpg)
+![](imgs/screen2.jpg)
+![](imgs/screen1.jpg)
 
 ## Tech Stack
 
