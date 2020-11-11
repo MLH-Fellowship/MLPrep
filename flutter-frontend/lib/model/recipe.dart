@@ -38,7 +38,7 @@ class Recipe {
       "url": this.url,
       "img": this.img,
       "cuisine": this.cuisine,
-      "ingredients": this.ingredients
+      "ingredients": this.ingredients.split(',')
     };
   }
 }
