@@ -47,7 +47,7 @@ class _IngredientsListState extends State<IngredientsList> {
               Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => Recipes()
+                        builder: (context) => Recipes(recipes : recipes)
                     )
               );
 

@@ -7,7 +7,7 @@ import 'recipe_repository.dart';
 class AppStateModel extends foundation.ChangeNotifier {
   // All the available products.
 
-  List<Recipe> _availableRecipes;
+  List<Recipe> _availableRecipes = <Recipe>[];
   // The currently selected category of products.
 
   // The IDs and quantities of products currently in the cart.

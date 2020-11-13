@@ -3,15 +3,25 @@ import 'package:provider/provider.dart';
 
 import 'model/app_state_model.dart';
 import 'recipe_row_item.dart';
+import 'model/recipe.dart';
 
-class Recipes extends StatelessWidget {
+class Recipes extends StatefulWidget {
+  List<Recipe> recipes;
+
+  Recipes({Key key, @required this.recipes}) : super(key: key);
+
   @override
+  _RecipesState createState() => _RecipesState();
+}
+
+class _RecipesState extends State<Recipes> {
+
+@override
   Widget build(BuildContext context) {
     return Consumer<AppStateModel>(
       builder: (context, model, child) {
-        final recipes = model.getRecipes();
         return CustomScrollView(
-          semanticChildCount: recipes.length,
+          semanticChildCount: widget.recipes.length,
           slivers: <Widget>[
             const CupertinoSliverNavigationBar(
               largeTitle: Text('Recipes'),
@@ -22,11 +32,11 @@ class Recipes extends StatelessWidget {
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    if (index < recipes.length) {
+                    if (index < widget.recipes.length) {
                       return RecipeRowItem(
                           index: index,
-                          recipe: recipes[index],
-                          lastItem: index == recipes.length - 1);
+                          recipe: widget.recipes[index],
+                          lastItem: index == widget.recipes.length - 1);
                     }
                     return null;
                   },

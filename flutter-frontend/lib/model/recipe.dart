@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class Recipe {
-  const Recipe({
+  Recipe({
     @required this.name,
     @required this.url,
     @required this.img,
@@ -20,15 +20,25 @@ class Recipe {
   final String img;
   final String cuisine;
   final String ingredients;
+  bool favorited = false;
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
-    print(json);
     return Recipe(
       name: json['name'],
       url: json['url'],
       img: json['img'],
       cuisine: json['cuisine'],
-      ingredients: json['ingredients'].join(",")
+      ingredients: json['ingredients'].join(","),
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "name": this.name,
+      "url": this.url,
+      "img": this.img,
+      "cuisine": this.cuisine,
+      "ingredients": this.ingredients.split(',')
+    };
   }
 }

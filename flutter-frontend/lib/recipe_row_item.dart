@@ -1,6 +1,8 @@
+import 'package:CookMe/favorites_tab.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:localstorage/localstorage.dart';
 
 import 'model/app_state_model.dart';
 import 'model/recipe.dart';
@@ -8,7 +10,9 @@ import 'styles.dart';
 import 'recipe_details.dart';
 
 class RecipeRowItem extends StatelessWidget {
-  const RecipeRowItem({
+  final LocalStorage storage = new LocalStorage('favorites');
+
+  RecipeRowItem({
     this.index,
     this.recipe,
     this.lastItem,
@@ -20,6 +24,7 @@ class RecipeRowItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List favoritesList = storage.getItem('favoritesList') ?? new List();
     final row = SafeArea(
       top: false,
       bottom: false,
@@ -72,11 +77,20 @@ class RecipeRowItem extends StatelessWidget {
                 padding: EdgeInsets.zero,
                 onPressed: () {
                   final model = Provider.of<AppStateModel>(context, listen: false);
+                  Map<String, dynamic> recipeJson = recipe.toJson();
+                  if (favoritesList.firstWhere((element) => element['name'] == recipe.name, orElse: () => '') != '') {
+                    // Remove from favorites list
+                    favoritesList.removeWhere((element) => element['name'] == recipe.name);
+                    recipe.favorited = false;
+                    FavoritesListTab.refresh(context);
+                  }
+                  else {
+                    favoritesList.add(recipeJson);
+                    recipe.favorited = true;
+                  }
+                  storage.setItem('favoritesList', favoritesList);
                 },
-                child: const Icon(
-                  CupertinoIcons.heart,
-                  semanticLabel: 'Add',
-                ),
+                child: Icon(CupertinoIcons.heart, semanticLabel: 'Favorite'),
               ),
             ],
           ),
